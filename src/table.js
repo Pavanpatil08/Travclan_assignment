@@ -7,7 +7,6 @@ import axios from "axios";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Avatar from '@material-ui/core/Avatar';
@@ -24,14 +23,14 @@ function Tablediv() {
   const classes = useStyles();
   const [merchantsdata, setmerchantsdata] = useState([])
   const [ togglebid , settogglebid] = useState(true)
-  const [ transfer , settransfer] = useState([])
+  const [ transfer , setTransfer] = useState({})
+  const [ togglecomponent , settogglecomponent] = useState(true)
   var num = 0
   useEffect(() => {
     async function loadData() {
       const result = await axios("https://intense-tor-76305.herokuapp.com/merchants");
       setmerchantsdata(result.data);
       console.log(merchantsdata)
-     
     }
     loadData();
   }, []);
@@ -40,11 +39,16 @@ function Tablediv() {
   }
   let history = useHistory();
   var handledata = (param)=>{
-    settransfer(param)
-    history.push("/view")
+      var setdata =   param
+      console.log(setdata)
+    setTransfer( setdata)
+    settogglecomponent(false)
+  history.push("/view")
   }
+  console.log(transfer)
   let displydata = merchantsdata.map((item, index) => {
     return (
+      
       <TableRow onClick={()=>{handledata(item)}} >
         <TableCell component="th" scope="row">
           {item.firstname} <Avatar alt="Remy Sharp" src={item.avatarUrl} />
@@ -54,13 +58,12 @@ function Tablediv() {
         <TableCell align="center"> 
         {togglebid? <Grid > max-bid {Math.max.apply(Math, item.bids.map(function(items) { return items.amount; }))}</Grid>:<Grid >min-bid{Math.min.apply(Math, item.bids.map(function(items) { return items.amount; }))}</Grid>}
         </TableCell>
-      
       </TableRow>
     )
   })
   return (
     <div className="App">
-      <Grid container>
+         <Grid container>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
@@ -72,12 +75,13 @@ function Tablediv() {
           </TableHead>
           <TableBody>
             {
-         displydata
+         togglecomponent ? displydata : <RowData datatransfer={transfer}/>
             }
+           
           </TableBody>
         </Table>
       </Grid>
-    
+     
     </div>
   );
 }
